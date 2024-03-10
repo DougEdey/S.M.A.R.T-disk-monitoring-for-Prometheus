@@ -87,14 +87,14 @@ parse_smartctl_scsi_attributes() {
   local disk_type="$2"
   local labels="disk=\"${disk}\",type=\"${disk_type}\""
   while read line; do
-    attr_type="$(echo "${line}" | tr '=' ':' | cut -f1 -d: | sed 's/^ \+//g' | tr ' ' '_')"
+    attr_type="$(echo "${line}" | tr '=' ':' | cut -f1 -d: | sed 's/^ \+//g' | tr ' ' '_'| tr '[:upper:]' '[:lower:]')"
     attr_value="$(echo "${line}" | tr '=' ':' | cut -f2 -d: | sed 's/^ \+//g')"
     case "${attr_type}" in
     number_of_hours_powered_up_) power_on="$(echo "${attr_value}" | awk '{ printf "%e\n", $1 }')" ;;
-    Current_Drive_Temperature) temp_cel="$(echo ${attr_value} | cut -f1 -d' ' | awk '{ printf "%e\n", $1 }')" ;;
-    Blocks_read_from_cache_and_sent_to_initiator_) lbas_read="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    Accumulated_start-stop_cycles) power_cycle="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    Elements_in_grown_defect_list) grown_defects="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    current_drive_temperature) temp_cel="$(echo ${attr_value} | cut -f1 -d' ' | awk '{ printf "%e\n", $1 }')" ;;
+    blocks_read_from_cache_and_sent_to_initiator_) lbas_read="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    accumulated_start-stop_cycles) power_cycle="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    elements_in_grown_defect_list) grown_defects="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
     esac
   done
   [ ! -z "$power_on" ] && echo "power_on_hours_raw_value{${labels},smart_id=\"9\"} ${power_on}"
@@ -109,24 +109,24 @@ parse_smartctl_nvme_attributes() {
   local disk_type="$2"
   local labels="disk=\"${disk}\",type=\"${disk_type}\""
   while read line; do
-    attr_type="$(echo "${line}" | tr '=' ':' | cut -f1 -d: | sed 's/^ \+//g' | tr ' ' '_')"
+    attr_type="$(echo "${line}" | tr '=' ':' | cut -f1 -d: | sed 's/^ \+//g' | tr ' ' '_' | tr '[:upper:]' '[:lower:]')"
     attr_value="$(echo "${line}" | tr '=' ':' | cut -f2 -d: | sed 's/^ \+//g')"
     case "${attr_type}" in
-    Blocks_read_from_cache_and_sent_to_initiator_) lbas_read="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    Accumulated_start-stop_cycles) power_cycle="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    Elements_in_grown_defect_list) grown_defects="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    Unsafe_Shutdowns) unsafe_shutdowns="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    Power_Cycles) power_cycles="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    Power_On_Hours) power_on="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    Host_Read_Commands) host_read_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
-    Host_Write_Commands) host_write_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
-    Controller_Busy_Time) controller_busy_time="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    Error_Information_Log_Entries) error_info_log_entry="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    Temperature) echo ${attr_value}; temp_cel="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
-    Percentage_Used) percentage_used="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
-    Available_Spare) available_spare="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
-    Available_Spare_Threshold) available_spare_threshold="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
-    Media_and_Data_Integrity_Errors) media_and_data_integrity_errors="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
+    blocks_read_from_cache_and_sent_to_initiator_) lbas_read="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    accumulated_start-stop_cycles) power_cycle="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    elements_in_grown_defect_list) grown_defects="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
+    unsafe_shutdowns | Unsafe_Shutdown_Count) unsafe_shutdowns="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    power_cycles | Power_Cycle_Count) power_cycles="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    power_on_hours) power_on="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    host_read_commands) host_read_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
+    host_write_commands) host_write_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
+    controller_busy_time) controller_busy_time="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    error_information_log_entries) error_info_log_entry="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    temperature | temperature_celsius) echo ${attr_value}; temp_cel="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
+    percentage_used) percentage_used="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
+    available_spare) available_spare="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
+    available_spare_threshold) available_spare_threshold="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
+    media_and_data_integrity_errors) media_and_data_integrity_errors="$(echo ${attr_value} | awk '{ printf "%d\n", $1 }')" ;;
     esac
   done
 
@@ -152,32 +152,32 @@ parse_smartctl_info() {
   local disk="$1" disk_type="$2"
   local model_family='' device_model='' serial_number='' fw_version='' vendor='' product='' revision='' lun_id=''
   while read line; do
-    info_type="$(echo "${line}" | cut -f1 -d: | tr ' ' '_')"
-    info_value="$(echo "${line}" | cut -f2- -d: | sed 's/^ \+//g' | sed 's/"/\\"/')"
+    info_type="$(echo "${line}" | cut -f1 -d: | tr ' ' '_' | tr '[:upper:]' '[:lower:]')"
+    info_value="$(echo "${line}" | cut -f2- -d: | sed 's/^ \+//g' | sed 's/"/\\"/')" 
     case "${info_type}" in
-    Model_Family) model_family="${info_value}" ;;
-    Device_Model) device_model="${info_value}" ;;
-    Serial_Number) serial_number="${info_value}" ;;
-    Firmware_Version) fw_version="${info_value}" ;;
-    Vendor) vendor="${info_value}" ;;
-    Product) product="${info_value}" ;;
-    Revision) revision="${info_value}" ;;
-    Logical_Unit_id) lun_id="${info_value}" ;;
+    model_family) model_family="${info_value}" ;;
+    device_model) vendor=$(echo "${info_value}" | cut -f1 -d' '); product=$(echo "${info_value}" | cut -f2 -d' ');  device_model="${info_value}" ;;
+    serial_number) serial_number="${info_value}" ;;
+    firmware_version) fw_version="${info_value}" ;;
+    vendor) vendor="${info_value}" ;;
+    product) product="${info_value}" ;;
+    revision) revision="${info_value}" ;;
+    logical_unit_Id) lun_id="${info_value}" ;;
     esac
-    if [[ "${info_type}" == 'SMART_support_is' ]]; then
+    if [[ "${info_type}" == 'smart_support_is' ]]; then
       case "${info_value:0:7}" in
-      Enabled) smart_enabled=1 ;;
-      Availab) smart_available=1 ;;
-      Unavail) smart_available=0 ;;
+      enabled) smart_enabled=1 ;;
+      availab) smart_available=1 ;;
+      unavail) smart_available=0 ;;
       esac
     fi
-    if [[ "${info_type}" == 'SMART_overall-health_self-assessment_test_result' ]]; then
+    if [[ "${info_type}" == 'smart_overall-health_self-assessment_test_result' ]]; then
       case "${info_value:0:6}" in
-      PASSED) smart_healthy=1 ;;
+      passed) smart_healthy=1 ;;
       esac
-    elif [[ "${info_type}" == 'SMART_Health_Status' ]]; then
+    elif [[ "${info_type}" == 'smart_health_status' ]]; then
       case "${info_value:0:2}" in
-      OK) smart_healthy=1 ;;
+      ok) smart_healthy=1 ;;
       esac
     fi
   done
