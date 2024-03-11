@@ -43,6 +43,7 @@ nand_writes_1gib
 offline_uncorrectable
 percent_lifetime_remain
 power_cycle_count
+power_cycles
 power_off_retract_count
 power_on_hours
 program_fail_count
@@ -115,8 +116,8 @@ parse_smartctl_nvme_attributes() {
     blocks_read_from_cache_and_sent_to_initiator_) lbas_read="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
     accumulated_start-stop_cycles) power_cycle="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
     elements_in_grown_defect_list) grown_defects="$(echo ${attr_value} | awk '{ printf "%e\n", $1 }')" ;;
-    unsafe_shutdowns | Unsafe_Shutdown_Count) unsafe_shutdowns="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
-    power_cycles | Power_Cycle_Count) power_cycles="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    unsafe_shutdowns | unsafe_shutdown_count) unsafe_shutdowns="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
+    power_cycles | power_cycle_count) power_cycles="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
     power_on_hours) power_on="$(echo "${attr_value}" | awk '{ printf "%d\n", $1 }')" ;;
     host_read_commands) host_read_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
     host_write_commands) host_write_commands="$(echo "${attr_value}" | tr -dc "0-9" | awk '{printf "%d\n", $1 }')" ;;
@@ -160,7 +161,7 @@ parse_smartctl_info() {
     serial_number) serial_number="${info_value}" ;;
     firmware_version) fw_version="${info_value}" ;;
     vendor) vendor="${info_value}" ;;
-    product) product="${info_value}" ;;
+    product | model_number) product="${info_value}" ;;
     revision) revision="${info_value}" ;;
     logical_unit_Id) lun_id="${info_value}" ;;
     esac
