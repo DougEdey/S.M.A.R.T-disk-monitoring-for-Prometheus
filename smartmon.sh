@@ -134,7 +134,7 @@ parse_smartctl_nvme_attributes() {
   [ ! -z "$power_on" ] && echo "power_on_hours_raw_value{${labels},smart_id=\"9\"} ${power_on}"
   [ ! -z "$temp_cel" ] && echo "temperature_celsius_raw_value{${labels},smart_id=\"194\"} ${temp_cel}"
   [ ! -z "$lbas_read" ] && echo "total_lbas_read_raw_value{${labels},smart_id=\"242\"} ${lbas_read}"
-  [ ! -z "$power_cycles" ] && echo "power_cycle_count_raw_value{${labels},smart_id=\"255\"} ${power_cycles}"
+  [ ! -z "$power_cycles" ] && echo "power_cycle_count_raw_value{${labels},smart_id=\"12\"} ${power_cycles}"
   [ ! -z "$unsafe_shutdowns" ] && echo "unsafe_shutdowns_count_raw_value{${labels},smart_id=\"255\"} ${unsafe_shutdowns}"
   [ ! -z "$grown_defects" ] && echo "grown_defects_count_raw_value{${labels},smart_id=\"12\"} ${grown_defects}"
   [ ! -z "$percentage_used" ] && echo "percentage_used_raw_value{${labels},smart_id=\"255\"} ${percentage_used}"
