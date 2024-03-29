@@ -3,6 +3,9 @@
 # by Samuel B. <samuel_._behan_(at)_dob_._sk> (c) 2012
 # source at: http://devel.dob.sk/collectd-scripts/
 
+# Modified by Doug to support more drives and I'm open to Pull Requests :)
+# https://github.com/DougEdey/S.M.A.R.T-disk-monitoring-for-Prometheus/
+
 # TODO: This probably needs to be a little more complex.  The raw numbers can have more
 #       data in them than you'd think.
 #       http://arstechnica.com/civis/viewtopic.php?p=22062211
